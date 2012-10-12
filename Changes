@@ -3,3 +3,8 @@ Revision history for IOD
 0.9.0    2012-10-13 (SHARYANTO)
 
          First release. Split from Config-Ini-OnDrugs.
+
+         - Change nested section syntax, from using indented section line to
+           using [foo/bar] (or [/foo]), [./foo], and [../foo], in an effort to
+           prevent users getting confused with significant indentation.
+

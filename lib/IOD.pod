@@ -28,6 +28,12 @@ configuration closer to a regular INI file.
 IOD is meant to be a general configuration format for applications.
 
 
+=head1 NOTATION
+
+Data structure is written in pseudo JSON format (JSON with ellipsis C<...> to
+denote missing pieces or say "so on", and comments.
+
+
 =head1 RATIONALE
 
 A general configuration file format needs to be simple for computers as well as
@@ -80,7 +86,7 @@ First, INI format is ill-defined. There is no single standard, thus various
 implementations behave differently and there are various variants of the format.
 This specification intends to describe the IOD format more precisely.
 
-Second, INI lacks some features that I like/need, like: variable
+Second, INI lacks some features that I like/need, like: nested section, variable
 substitution/expression, inclusion of other files, and merging between sections.
 Most of these features make writing configuration less repetitive.
 
@@ -90,6 +96,24 @@ A configuration is a text file containing a sequence of lines. Default encoding
 is UTF-8. Each line is either a blank line, a comment line, a directive line, a
 section line, or a parameter line. Parsing is done line-by-line and in a single
 pass.
+
+=head2 Argument and quoting
+
+An argument is a sequence of one or more non-whitespace, non-newline, and
+non-double-quote (C<">) characters. Examples:
+
+ word
+ argument2
+ yet-another-argument!
+
+To represent a zero-length argument or argument containing quotes, newlines, or
+other non-printable characters, a quoting mechanism can be used. Quoting is done
+with the double-quote (C<">) character. Escaping is done using the backslash
+(C<\>) character. Known escapes are C<\'> (literal single-quote), C<\"> (literal
+double-quote), C<\\> (literal backslash), C<\r> (linefeed), C<\f> (formfeed),
+C<\$> (literal dollar), C<\n> (newline), C<\t> (tab), C<\b> (backspace), C<\a>
+(bell), C<\0> (null character), octal form (e.g. C<\0377>), hex form (e.g.,
+C<\xff>) and wide-hex form (C<\x{263a}>).
 
 =head2 Blank line
 
@@ -105,9 +129,8 @@ preferred.
 
 A directive line is a special unindented comment line, the comment starts with
 zero or more whitespaces, an exclamation mark (C<!>), a directive name (a word
-matching regular expression C</\w+/>, and zero or more arguments. Arguments are
-words (or a quoted string) separated by whitespaces. An invalid directive will
-cause parsing to fail.
+matching regular expression C</\w+/>, and zero or more arguments separated by
+whitespaces. An invalid directive will cause parsing to fail.
 
 Examples of valid directives:
 
@@ -179,11 +202,10 @@ When C<dir1/a.ini> is parsed, the result will be (in JSON):
    },
  }
 
-=head3 !defaults <SECTION> [SECTION2] ...
+=head3 !defaults <SECTION>
 
 Specify that from now on, when encountering a new section, fill it with values
-from SECTION (and then SECTION2, and so on) unless the values are already
-specified.
+from C<SECTION> unless the values are already specified.
 
 Example:
 
@@ -201,7 +223,7 @@ Example:
 
  [sect4]
  a=0
- b:=undef
+ b=(nil)
 
 Will result in:
 
@@ -245,70 +267,127 @@ Another, more meaty example:
  ;no more defaults
  ;!defaults
 
-Defaults to the same section is ignored.
+Defaults to the same section results in an error.
 
-=head3 !merge
+To end defaults, you can use the C<!nodefaults> directive.
 
-Mode-merging using L<Data::ModeMerge>. Details to be specified later.
+C<!defaults> is actually the same as C<!merge>, except that C<!merge> allows an
+optional merging mode.
+
+=head3 !nodefaults
+
+Remove C<!defaults> effect, if one has been specified previously.
+
+=head3 !merge <SECTION> [MODE]
+
+Specify that from now on, section will merge C<SECTION>. An optional C<MODE> is
+allowed to do mode-merging, as specified by L<Data::ModeMerge> (an
+implementation which does not support it can disallow mode merging). If there is
+a C<!defaults> directive in effect, defaults should be applied first. To end
+merging, you can use the C<!nomerge> directive. Example:
+
+ [defaults]
+ d=4
+
+ !defaults defaults
+
+ [s1]
+ a=1
+ b=2
+ d=4
+
+ !merge s1 +
+ [s2]
+ a=10
+ c=30
+
+ !merge s1 .
+ [s3]
+ a=20
+ c=60
+
+ !nomerge
+
+ [s3]
+ a=20
+
+will result in:
+
+ {
+   "s1": {"a": 1, "b": 2},
+   "s2": {"a": 11, "b": 20, "c": 30, "d": 8},  //(s1+defaults) [+] (s2+defaults)
+   "s3": {"a": 110, "b": 2, "c": 60, "d": 44}, //(s1+defaults) [.] (s3+defaults)
+   "s4": {"a": 20, "d": 4} // no more merging
+ }
+
+=head3 !nomerge
+
+Remove C<!merge> effect, if one has been specified previously.
+
+=head3 !sectionpath <PATH ...>
+
+Specify that from now on, prefix the section with C<PATH>. Example:
+
+ [s1]
+ a=1
+
+ [s2]
+ b=2
+
+ ;!sectionpath s1
+ [s2]
+ c=3
+
+ ;!sectionpath x y
+ ;same thing: !sectionpath x/y
+ [z]
+ d=4
+
+will result in:
+
+ {
+   "s1": {"a":1, "s2": {"c": 3}},
+   "s2": {"b":2},
+   "x": {"y": {"z": {"d":4}}}
+ }
+
+=head3 !nosectionpath
+
+Remove C<!sectionpath> effect, if one has been specified previously.
 
 =head2 Section line
 
 A section line introduces a section:
 
+ "[" <ARGUMENT> ( "/" <ARGUMENT> )* "]"
+
+For section line, argument is allowed to have whitespaces in it because it is
+enclosed inside C<[]>.
+
+Examples:
+
  [Section Name]
  ["quoted [] section name"]
- []
  [""]
 
-Comment is allowed at the end. To write a section name with problematic
-characters (like "\n", "\0", "]", etc.), use quotes.
+Indentation is allowed. Comment is allowed at the end:
 
-To specify nested section, you indent the subsection line relative to section
-line (minimum is 1 whitespace):
+ [foo] ; a comment
 
- [Outer]
-   [Inner]
-     [Further Inner]
-       [a]
-       val=1
-       [b]
- [c]
- val=2
+To write a section name with problematic characters (like "\n", "\0", "]",
+etc.), use quotes.
 
-will result in:
+To specify nested section, you use the path separator character C</> to separate
+between section names. An unquoted argument with C</> in it is also accepted as
+path separator. Examples:
 
- {Outer => {
-     Inner => {
-         "Further Inner" => {
-             a => {
-                 val => 1,
-             },
-             b => {
-             },
-         },
-     },
-  c => {
-      val => 1,
-  },
- },
-
-Use of tab character is discouraged, but if exists as indentation it will be
-counted as 1 whitespace. Parameter line needs to be indented at least as its
-section:
-
- [Section]
-   [Subsection]
-   a=1
-     b=2
-   c=3
- d=4
-  e=5
-
-In the above example, a, b, and c belong to Subsection will d and e belong to
-Section.
+ [databases/mysql]
+ [databases/sqlite 3]
+ ["databases"/"mysql"]
+ ["databases" / "sqlite 3"]
 
 Non-contiguous sections are allowed, they will be assumed to be set/add
-parameters, e.g.:
+parameters as if the section were written contiguously, e.g.:
 
  [sect1]
  a=1
@@ -320,7 +399,8 @@ parameters, e.g.:
  a=2
  b=3
 
-will result in C<sect1> containing C<a> as [1, 2] and C<b> as 3. However, note:
+will result in C<sect1> containing C<a> as C<[1, 2]> and C<b> as C<3>. However,
+note:
 
  [sect1]
  a=1
@@ -335,159 +415,86 @@ will result in C<sect1> containing C<a> as [1, 2] and C<b> as 3. However, note:
  [sect3]
  c=3
 
-C<sect2> will contain {a=>1, d=>4} since at the point of parsing C<sect2>,
-C<sect1> only contains {a=>1}. However, C<sect3> will contain {a=>1, b=>2, c=>3}
-since at the point of parsing C<sect3>, C<sect1> already becomes {a=>1, b=>2}.
+C<sect2> will contain C<< {"a":1, "d":4} >> since at the point of parsing
+C<sect2>, C<sect1> only contains C<< {"a":1} >>. However, C<sect3> will contain
+C<< {"a":1, "b":2, "c":3} >> since at the point of parsing C<sect3>, C<sect1>
+already becomes C<< {"a":1, "b":2} >>.
 
 =head2 Parameter line
 
 Parameter lines specify name value pairs:
 
+ C<NAME-ARGUMENT> "=" <VALUE-ARGUMENT>
+
+Unquoted arguments are allowed to contain whitespaces since C<=> is used as
+separator. Indentation is allowed as well as whitespaces between C<=>. Trailing
+witespaces should be trimmed, i.e. they are not part of parameter value. Comment
+is also allowed at the end. To specify parameter name/value which contains
+problematic characters, use quoting.
+
+
+Examples:
+
  Parameter name = value
-   Parameter2=value ; this is not a comment and part of value
+ name = value ; a comment
+ "Parameter name"="value" ; same thing
+ Parameter2="value ; this is not a comment and part of value"
+ "name containing trailing spaces "="value containing trailing spaces  "
+ x="\0"
 
-Parameter name and value can be quoted:
+Specifying several parameters with the same name will create an array. Example:
 
- "Contains\nnewline" = "\0"
+ a=1
+ a=2
 
-Whitespace before parameter name is allowed and can be used to enter/leave
-subsection (see L</"Subsection line">). Whitespaces between the "=" character
-are allowed and ignored. Trailing whitespace is allowed and ignored for quoted
-values but significant for unquoted values.
+will result in:
 
- a=1<space>
- b="2"<space>
+ {"a": [1, 2]}
 
-In the above example, value of C<a> is "1" followed by a space, while value of
-C<b> is just "2".
+To specify expression value, use unquoted argument enclosed with C<()>.
+Examples:
 
-Note that some INI parsers forbid some/all of these whitespaces.
+ a=(1+1) ; -> 2
+ a="(1+1)" ; -> a string literal because of quotes, not an expression
 
-Instead of "=" you can use ":=" to specify expression instead of literal value.
-Expression is parsed by L<Language::Expr>. Using expression, you can specify a
-null (undefined) value:
+See L</"Expression"> for more details on expressions. Using expression you can
+specify an array with a zero or one element.
 
- param1 := undef
-
-or alternative of writing arrays. Instead of:
-
- param=foo
- param=bar
-
-you can write:
-
- param := ["foo", "bar"]
-
-Using expression you can also specify an array with a single value (not possible
-using "=").
-
- param:=["foo"]
-
-You can also specify an empty array using expression:
-
- param:=[]
-
-To escape ":" as part of parameter name, use quoting:
-
- "param:"="literal, not expression"
+ a = ( [] )
+ a = ( [1] )
 
 Normally a parameter line should occur below section line, so that parameter
 belongs to the section. But a parameter line is also allowed before section
 line, in which it will belong to section called C<DEFAULT> (configurable via the
 parser's B<default_section> attribute).
 
-=head2 Quoting
+=head2 Expression
 
-Quoting is done with the double-quote (L<">) character. Known escapes are \',
-\", \\, \r (linefeed), \f (formfeed), \$ (literal $), \n (newline), \t (tab), \b
-(backspace), \a (bell), \0, octal form ("\0377"), hex form ("\xff") and wide-hex
-form (\x{263a}).
+Currently expression is specified using L<Template::Xslate::Syntax::Kolon>
+syntax. Parameters in the current section is available as normal variables,
+example:
 
-Quoting is allowed for section name in section line and for parameter name and
-value in parameter line.
+ [section]
+ a=1
+ b=($a + 1)
 
-=head2 Includes
+Parameters from other sections are available through the C<$ROOT> variable,
+example:
 
-You can include another file using the !include directive:
-
- ;!include "/My Home/foo.ini"
-
-See the documentation of the !include directive for more details.
-
-=head2 Variables and calculations
-
-You can use variables and calculations using the expressions.
-
- ; param is 1+2+$a, literal
- param=1+2+$a
-
- ; param is 5
+ [s1]
  a=3
+
+ [s2/s3]
  b=4
- param := ($a**2 + $b**2) ** 0.5
 
- ; to refer to sections
- [Section1]
- lang="Perl"
-
- [Section2]
- param:="I love " + $CONFIG['Section1']['lang']
-
-Note: since parsing is done in 1-pass, make sure that you define a parameter
-first before using it in expressions.
-
-=head2 Specifying defaults
-
-To avoid repetition, you can specify defaults in a section and then use the
-values in that section for others. See documentation on the !defaults directive
-for more details.
-
-=head2 Merging between sections
-
-To be specified later.
-
-=head2 Summary of extended features
-
-Below is a summary of extended features provided by IOD over "standard" INI
-format:
-
-=over 4
-
-=item * Round-trip parsing
-
-=item * Quoting
-
-=item * Indented section line, comments after section line
-
-=item * Indented comment line
-
-=item * Whitespaces before parameter name, between =, after parameter value
-
-Some INI parsers do not allow whitespaces at all.
-
-=item * # as comment character
-
-Some strict INI parsers only recognize C<;> as the comment starter. If in doubt,
-always use C<;>.
-
-=item * Directives (e.g. include, defaults, merging)
-
-Other INI parsers will see directive line as regular comment line.
-
-=item * Expressions
-
-Other INI parsers will see:
-
- param:=value
-
-as { "param:" => "value" }.
-
-=back
+ [s4]
+ c = ($ROOT["s1"]["a"] + $ROOT["s2"]["s3"]["b"]) ; -> 7
 
 =head2 Unsupported features
 
-Some INI implementation support other features, and listed below are those
-unsupported by IOD, usually because the features are not popular:
+Some INI implementations support other features, and listed below are those
+unsupported by IOD, usually because the features are not popular or too
+incompatible with regular INI syntax:
 
 =over 4
 
@@ -515,7 +522,7 @@ Supported by Config::IniFiles. In IOD, use multiple assignment or expression:
 
 or:
 
- param:=["value1", "value2"]
+ param=(["value1", "value2"])
 
 =back
 
@@ -575,13 +582,34 @@ INI-compatible, this option can be turned off.
 
 =item * whether the !include directive is allowed
 
-File inclusion is an IOD extension. If user wants her configuration to be more
+File inclusion is an IOD extension.
+
+=item * whether the !defaults directive is allowed
+
+Defaults is an IOD extension. If user wants her configuration to be more
 INI-compatible, this option can be turned off.
 
-=item * whether the !defaults and !merge directives are allowed
+=item * whether the !merge directive is allowed
 
-Merging between sections is an IOD extension. If user wants her configuration to
-be more INI-compatible, this option can be turned off.
+Merging between sections is an IOD extension.
+
+=item * whether mode merging is allowed
+
+Mode-merging is specified and implemented by L<Data::ModeMerge>, which might not
+yet available in other languages.
+
+=item * whether discontiguous section is allowed
+
+Most INI parsers allow this. Example:
+
+ [s1]
+ v1=1
+
+ [s2]
+ x=y
+
+ [s1]
+ v2=2
 
 =back
 

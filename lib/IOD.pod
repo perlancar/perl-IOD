@@ -33,6 +33,10 @@ IOD is meant to be a general configuration format for applications.
 Data structure is written in pseudo JSON format (JSON with ellipsis C<...> to
 denote missing pieces or say "so on", and comments.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in RFC 2119.
+
 
 =head1 RATIONALE
 

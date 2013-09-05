@@ -126,8 +126,8 @@ A blank line is a line containing zero or more whitespaces only. It is ignored.
 =head2 Comment line
 
 A comment line begins with C<;> or C<#> as it's first nonblank character (note
-that some INI parsers do not allow indented comment). The use of C<;> is
-preferred.
+that some INI parsers do not allow indented comment; some only recognizes C<;>
+as the comment starter character). The use of C<;> is preferred.
 
 =head2 Directive line
 

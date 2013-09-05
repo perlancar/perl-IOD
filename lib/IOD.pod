@@ -96,8 +96,8 @@ Most of these features make writing configuration less repetitive.
 
 =head1 SPECIFICATION
 
-A configuration is a text file containing a sequence of lines. Default encoding
-is UTF-8. Each line is either a blank line, a comment line, a directive line, a
+A configuration is a text file containing a sequence of lines. Encoding MUST be
+UTF-8. Each line is either a blank line, a comment line, a directive line, a
 section line, or a parameter line. Parsing is done line-by-line and in a single
 pass.
 

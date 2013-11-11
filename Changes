@@ -2,7 +2,7 @@ Revision history for IOD
 
 0.9.0    2012-10-14 (SHARYANTO)
 
-         First release. Split from implementation Config-Ini-OnDrugs.
+         - First release. Split from implementation Config-Ini-OnDrugs.
 
          - Some rewording and reorganization.
 
@@ -19,4 +19,3 @@ Revision history for IOD
          - Now only one argument is allowed for !defaults.
 
          - Some rewording and reorganization.
-

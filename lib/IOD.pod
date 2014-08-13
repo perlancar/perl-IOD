@@ -118,7 +118,7 @@ C<NAME> is one or more non-whitespace characters and must not contain the equal
 sign (C<=>). C<VALUE> is either: 1) zero or more non-newline characters with
 optional encoding prefix, or a JSON string with double quotes. Encoding prefix
 is C<!> followed by encoding name, followed by at least one space. Known
-encodings are: C<j> or C<json>, C<hex>, C<base64>, C<e> or C<expr>.
+encodings are: C<j> or C<json>, C<h> or C<hex>, C<base64>, C<e> or C<expr>.
 
 Comment is allowed unless when it creates ambiguity in parsing (e.g. unquoted
 value with C<!j> or C<!json> encoding).
@@ -345,17 +345,17 @@ incompatible with regular INI syntax:
 
 =item * Line continuation for multiline value
 
- param=line 1 \
+ key=line 1 \
  line 2\
  line 3
 
 Supported by L<Config::IniFiles>. In IOD, use JSON string or encoding:
 
- param="line 1 \nline 2\nline 3"
+ key="line 1 \nline 2\nline 3"
 
 =item * Heredoc syntax for array
 
- param=<<EOT
+ key=<<EOT
  value1
  value2
  EOT
@@ -363,12 +363,12 @@ Supported by L<Config::IniFiles>. In IOD, use JSON string or encoding:
 Supported by L<Config::IniFiles>. In IOD, use multiple assignment or JSON
 encoding:
 
- param=value1
- param=value2
+ key=value1
+ key=value2
 
 or:
 
- param=!j ["value1", "value2"]
+ key=!j ["value1", "value2"]
 
 =back
 
@@ -463,7 +463,11 @@ IOD has more features:
 
 Using the including base64 and variable substitution/expression.
 
-=item * directive lines (C<;!directive>) for extra features, including: merging between sections,
+=item * merge between sections
+
+=item * include other files
+
+=back
 
 =head2 Why are blank lines allowed in IOD?
 
@@ -472,7 +476,7 @@ human to read. Note that many INI parsers also allow blank lines.
 
 =head2 What are the downsides of IOD format?
 
-=over 4
+=over
 
 =item * Currently only has Perl parser (L<Config::IOD>)
 

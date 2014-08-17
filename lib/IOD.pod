@@ -232,6 +232,13 @@ This directive is invalid because of missing required argument:
 
  ;!include
 
+To catch common errors, this syntax SHOULD also be allowed:
+
+ !noop
+ ;! noop
+ ; !noop
+ ; ! noop
+
 B<Argument>. An argument is a sequence of one or more non-whitespace,
 non-newline characters, or a JSON string. Examples:
 

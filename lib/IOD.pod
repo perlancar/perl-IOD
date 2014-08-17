@@ -291,10 +291,13 @@ When C<dir1/a.ini> is parsed, the result will be (in JSON):
    },
  }
 
-=head3 !merge <SECTION> ...
+=head3 !merge [SECTION] ...
 
 Specify that from now on, section will merge the specified section(s), in order.
-The specified sections to be merged must be predeclared. Example:
+The specified sections to be merged must be predeclared. To stop merging,
+specify the directive without any argument.
+
+Example:
 
  [defaults]
  d=4
@@ -310,7 +313,7 @@ The specified sections to be merged must be predeclared. Example:
 
  [s3]
 
- !nomerge
+ !merge
 
  [s4]
  a=20
@@ -324,10 +327,6 @@ will result in (in pseudo-JSON):
    "s3"      : {"a":1,  "b":2,         "d":4},
    "s4"      : {"a":20}, // no more merging
  }
-
-=head3 !nomerge
-
-Remove C<!merge> effect, if one has been specified previously.
 
 =head2 Expression
 

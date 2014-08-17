@@ -328,6 +328,10 @@ will result in (in pseudo-JSON):
    "s4"      : {"a":20}, // no more merging
  }
 
+=head3 !noop ...
+
+Directive that does nothing and will be ignored. For testing.
+
 =head2 Expression
 
 Currently expression is not fully defined and left to the implementation. The

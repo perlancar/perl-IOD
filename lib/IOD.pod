@@ -504,5 +504,5 @@ INI format specification, L<http://en.wikipedia.org/wiki/INI_file>
 
 =cut
 
-#ABSTRACT: IOD file format specification
+#ABSTRACT: IOD (INI On Drugs) file format specification
 #PODNAME: IOD

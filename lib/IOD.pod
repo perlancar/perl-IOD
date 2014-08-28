@@ -120,9 +120,10 @@ This line sets key name and value:
 
 C<NAME> is one or more non-whitespace characters and must not contain the equal
 sign (C<=>). C<VALUE> is either: 1) zero or more non-newline characters with
-optional encoding prefix, or a JSON string with double quotes. Encoding prefix
-is C<!> followed by encoding name, followed by at least one space. Known
-encodings are: C<j> or C<json>, C<h> or C<hex>, C<base64>, C<e> or C<expr>.
+optional encoding prefix, or a JSON string with double quotes, or a JSON array
+started with "[", or a JSON hash (object) started with "{". Encoding prefix is
+C<!> followed by encoding name, followed by at least one space. Known encodings
+are: C<j> or C<json>, C<h> or C<hex>, C<base64>, C<e> or C<expr>.
 
 Comment is allowed unless when it creates ambiguity in parsing (e.g. unquoted
 value with C<!j> or C<!json> encoding).
@@ -136,7 +137,10 @@ Examples:
  foo=!hex 00ff00 ; 3-byte binary data
  foo="a JSON string\nwith newline" ; comment
  foo=!j "a JSON string\nwith newline"
+ foo=["a json array", "because it's started", "with ["]
  foo=!json [1,2,3]
+ foo={"a json hash":1, "because it's started":2, "with {":3}
+ foo=!json {"a":1,"b":2}
 
 Specifying several keys with the same name will create an array value. Example:
 

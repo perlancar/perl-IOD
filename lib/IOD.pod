@@ -306,9 +306,10 @@ When C<dir1/a.ini> is parsed, the result will be (in JSON):
 
 =head3 !merge [SECTION] ...
 
-Specify that from now on, section will merge the specified section(s), in order.
-The specified sections to be merged must be predeclared. To stop merging,
-specify the directive without any argument.
+Specify that from now on (meaning, from the I<current> section, not the I<next>
+session), section will merge the specified section(s), in order. The specified
+sections to be merged must be predeclared. To stop merging, specify the
+directive without any argument.
 
 Example:
 
@@ -319,16 +320,15 @@ Example:
  a=1
  b=2
 
- !merge defaults s1
  [s2]
+ !merge defaults s1
  a=10
  c=30
 
  [s3]
 
- !merge
-
  [s4]
+ !merge
  a=20
 
 will result in (in pseudo-JSON):

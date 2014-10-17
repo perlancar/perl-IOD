@@ -78,6 +78,7 @@ B<Apache-webserver-style> lacks round-trip parsers.
 B<XML> lacks round-trip parsers and is not convenient for humans to read and
 write.
 
+
 =head2 Why not plain INI?
 
 First, INI format is ill-defined. There is no single standard, thus various
@@ -505,6 +506,12 @@ INI. It is also not terribly hard to write implementations in other languages.
 =head1 SEE ALSO
 
 INI format specification, L<http://en.wikipedia.org/wiki/INI_file>
+
+TOML, a minimal configuration file format that looks like INI, but diverges
+more, https://github.com/toml-lang/toml. This is similar in goal and principles
+to IOD, with a few differences: more types and literals (boolean, datetime),
+array and strings can span lines. There are already implementations in multiple
+languages, but there seems to be no focus on round-tripping.
 
 =cut
 

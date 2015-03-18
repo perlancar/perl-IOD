@@ -159,8 +159,8 @@ See L</"Expression"> for more details on expressions.
 
 Normally a key line should occur below section line, so that key belongs to the
 section. But a key line is also allowed before section line, in which it will
-belong to section called C<ALL> (configurable via the parser's
-B<fallback_section> attribute).
+belong to section called C<GLOBAL> (configurable via the parser's
+B<default_section> attribute).
 
 =head2 Section line
 

@@ -119,22 +119,19 @@ This line sets key name and value:
 
  <ws>* <NAME> <ws>* "=" <ws>* <VALUE> [<ws>* ";"|"#" <COMMENT>]
 
-C<NAME> is one or more non-whitespace characters and must not contain the equal
-sign (C<=>). C<VALUE> is either: 1) zero or more non-newline characters with
-optional encoding prefix, or a JSON string with double quotes, or a JSON array
-started with "[", or a JSON hash (object) started with "{". Encoding prefix is
-C<!> followed by encoding name, followed by at least one space. Known encodings
-are: C<j> or C<json>, C<h> or C<hex>, C<base64>, C<e> or C<expr>.
-
-Comment is allowed unless when it creates ambiguity in parsing (e.g. unquoted
-value with C<!j> or C<!json> encoding).
+C<NAME> can contain anything but newline or the equal sign (C<=>). C<VALUE> is
+either: 1) zero or more non-newline characters with optional encoding prefix, or
+a JSON string with double quotes, or a JSON array started with "[", or a JSON
+hash (object) started with "{". Encoding prefix is C<!> followed by encoding
+name, followed by at least one space. Known encodings are: C<j> or C<json>, C<h>
+or C<hex>, C<base64>, C<e> or C<expr>.
 
 Examples:
 
  foo=bar
  foo bar=baz
  foo = bar baz ; whitespace around the equal sign will be removed
- foo=!base64 YmFyIGJheg==
+ foo=!base64 YmFyIGJheg== ; bar baz
  foo=!hex 00ff00 ; 3-byte binary data
  foo="a JSON string\nwith newline" ; comment
  foo=!j "a JSON string\nwith newline"

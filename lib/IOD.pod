@@ -212,22 +212,31 @@ already becomes C<< {"a":1, "b":2} >>.
 
 =head2 Directive line
 
-A directive line is a comment line using the C<;> comment character. The comment
-starts with an exclamation mark (C<!>), a directive name (a word matching
-regular expression C</\w+/>, and zero or more arguments separated by
-whitespaces. To catch common error, the C<;> is optional and whitespaces are
-allowed.
+A directive line is an unindented comment line using the C<;> comment character.
+The comment starts with an exclamation mark (C<!>), a directive name (a word
+matching regular expression C</\w+/>, and zero or more arguments separated by
+whitespaces. Since it is a common error to write C<!> instead of C<:!>, the
+parser can have a configuration to allow C<;> to become optional (though note
+that this will result in an invalid INI file).
 
- <ws>* (";")? <ws>* "!" <ws>* <NAME> <ws>+ [ARGUMENTS]
+ (";")? <ws>* "!" <ws>* <NAME> <ws>+ [ARGUMENTS]
 
 An invalid directive will cause parsing to fail.
 
 Examples of valid directives:
 
  ;!include somefile.iod
-  ! include "c:/Configuration Files/somefile.ini"
 
-This directive is invalid because of invalid name:
+This directive is invalid because it uses C<#> instead of C<;>:
+
+ #!include blah
+
+This directive is invalid because it is indented:
+
+ ;start of line
+   ;!include foo
+
+This directive is invalid because of invalid directive name:
 
  ;!include! somefile.iod
 

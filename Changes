@@ -1,5 +1,13 @@
 Revision history for IOD
 
+0.9.9   2015-03-18 (PERLANCAR)
+
+        - Be more strict about directive line: it must not be indented
+          (otherwise it becomes a normal comment line).
+
+        - Fix wordings and minor updates.
+
+
 0.9.8   2015-01-03 (PERLANCAR)
 
 	- No spec changes.

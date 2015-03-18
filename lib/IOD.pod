@@ -456,10 +456,13 @@ human to read. Note that many INI parsers also allow blank lines.
 
 =over
 
-=item * Currently only has Perl parser (L<Config::IOD>)
+=item * Currently only has Perl parser (L<Config::IOD>, L<Config::IOD::Reader>)
 
 INI parsers exist everywhere though, so some of the time you can fallback to
-INI. It is also not terribly hard to write implementations in other languages.
+INI. Also, because the specification is simple, it is also relatively easy to
+write implementations in other languages. The default Perl implementations
+themselves are only about 400-600 lines (including blank lines, not counting
+POD).
 
 =back
 

@@ -1,5 +1,12 @@
 Revision history for IOD
 
+0.9.10  2016-02-24 (PERLANCAR)
+
+	- [Experimental] Introduce encodings !path and !paths which are
+	  literal string/array of strings but with some
+	  substitution/wildcard expansion.
+
+
 0.9.9   2015-03-18 (PERLANCAR)
 
         - Be more strict about directive line: it must not be indented

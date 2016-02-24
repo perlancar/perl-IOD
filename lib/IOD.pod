@@ -124,7 +124,8 @@ either: 1) zero or more non-newline characters with optional encoding prefix, or
 a JSON string with double quotes, or a JSON array started with "[", or a JSON
 hash (object) started with "{". Encoding prefix is C<!> followed by encoding
 name, followed by at least one space. Known encodings are: C<j> or C<json>, C<h>
-or C<hex>, C<base64>, C<e> or C<expr>.
+or C<hex>, C<base64>, C<e> or C<expr>, C<path>, C<paths>. See L</"Encoding"> for
+more details about encoding.
 
 Examples:
 
@@ -351,6 +352,80 @@ will result in (in pseudo-JSON):
 =head3 !noop ...
 
 Directive that does nothing and will be ignored. For testing.
+
+=head2 Encoding
+
+=over
+
+=item * json (j)
+
+JSON encoding.
+
+=item * hex (h)
+
+Hex encoding, e.g.:
+
+ param = !hex 48
+
+will set C<param> to a literal C<H> (ASCII code for C<H> is 0x48). Another
+example:
+
+ param = !h 480a
+
+will set C<param> to C<"H\n"> (a literal C<H> followed by newline character).
+
+=item * base64
+
+Base64 encoding, e.g.:
+
+ foo = !base64 YmFyIGJheg==
+
+will set C<foo> to C<bar baz>.
+
+=item * expr (e)
+
+Currently not specified.
+
+=item * path
+
+EXPERIMENTAL. A literal string, except that C<~> or C<~USER> prefix will be
+replaced with the home directory of current user, or specified user,
+respectively. An extra C</> suffix is also allowed for directory and will be
+stripped.
+
+When an unknown user is specified, the parser should die.
+
+For example:
+
+ log_dir = !path ~/logs
+
+Without the C<!path> encoding, C<log_dir> will be set to a literal C<~/logs>
+without the C<~> translated.
+
+=item * paths
+
+EXPERIMENTAL. A literal string, except that like in C<!path> C<~> or C<USER>
+prefix will be substituted with user home directory. In addition to that,
+wildcard characters like C<*>, C<?> will be interpreted. Wildcard expansion is
+currently left to the implementation. The result will be an array of strings.
+
+When wildcard does not match any file (e.g. C<!paths foo*> where there are no
+files in the current directory that begins with C<foo>), an empty array should
+be returned. When an unknown user or unknown path is given (e.g. C<!paths
+/var/zzz/*> when there is no directory named C</var/zzz/>) or there is an error
+during expansion (e.g. C<!paths /root/a*> when the current user does not have
+sufficient permission to look into C</root>), the parser should die.
+
+Example:
+
+ dist_dirs = !paths ~/repos/perl-*
+
+Without the C<!paths> encoding, C<dist_dirs> will be set to a literal string
+C<~/repos/perl-*> without the C<~> translated and wildcard expanded. With the
+C<!paths> encoding, C<dist_dirs> will be set to an array of strings.
+
+=back
+
 
 =head2 Expression
 

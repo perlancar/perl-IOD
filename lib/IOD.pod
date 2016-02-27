@@ -365,14 +365,14 @@ JSON encoding.
 
 Hex encoding, e.g.:
 
- param = !hex 48
+ key = !hex 48
 
-will set C<param> to a literal C<H> (ASCII code for C<H> is 0x48). Another
+will set C<key> to a literal C<H> (ASCII code for C<H> is 0x48). Another
 example:
 
- param = !h 480a
+ key = !h 480a
 
-will set C<param> to C<"H\n"> (a literal C<H> followed by newline character).
+will set C<key> to C<"H\n"> (a literal C<H> followed by newline character).
 
 =item * base64
 

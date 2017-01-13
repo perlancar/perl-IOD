@@ -365,6 +365,11 @@ Directive that does nothing and will be ignored. For testing.
 
 JSON encoding.
 
+This encoding will automatically be assumed when the value starts with C<">
+(double quote, signifying a JSON string), C<[> (opening brace parenthesis,
+signifying a JSON array), C<{> (opening curly brace parenthesis, signifying a
+JSON hash (object).
+
 =item * hex (h)
 
 Hex encoding, e.g.:

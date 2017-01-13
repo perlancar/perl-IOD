@@ -128,8 +128,8 @@ either: 1) zero or more non-newline characters with optional encoding prefix, or
 a JSON string with double quotes, or a JSON array started with "[", or a JSON
 hash (object) started with "{". Encoding prefix is C<!> followed by encoding
 name, followed by at least one space. Known encodings are: C<j> or C<json>, C<h>
-or C<hex>, C<base64>, C<e> or C<expr>, C<path>, C<paths>. See L</"Encoding"> for
-more details about encoding.
+or C<hex>, C<base64>, C<e> or C<expr>, C<path>, C<paths>, and C<none>. See
+L</"Encoding"> for more details about encoding.
 
 Examples:
 
@@ -144,6 +144,10 @@ Examples:
  foo=!json [1,2,3]
  foo={"a json hash":1, "because it's started":2, "with {":3}
  foo=!json {"a":1,"b":2}
+ foo=~/logs              ; will become e.g. /home/ujang/logs
+ foo=~budi/Pictures      ; will become e.g. /home/budi/Pictures
+ foo="~/logs"            ; a JSON-encoded string with value "~/logs"
+ foo=!none [             ; a single open brace character
 
 Specifying several keys with the same name will create an array value. Example:
 
@@ -408,8 +412,19 @@ For example:
 
  log_dir = !path ~/logs
 
-Without the C<!path> encoding, C<log_dir> will be set to a literal C<~/logs>
-without the C<~> translated.
+C<log_dir> will be set to e.g C</home/ujang/logs>.
+
+If the first character of the value is C<~> (tilde), the path encoding is
+implicitly assumed unless there is an explicit encoding specification. So
+actually the previous example could just be written as:
+
+ log_dir = ~/logs
+
+To prevent the translation of C<~>, you can use C<!none> or double quote (JSON
+string):
+
+ log_dir = !none ~/logs
+ log_dir = "~/logs"
 
 =item * paths
 
@@ -432,6 +447,26 @@ Example:
 Without the C<!paths> encoding, C<dist_dirs> will be set to a literal string
 C<~/repos/perl-*> without the C<~> translated and wildcard expanded. With the
 C<!paths> encoding, C<dist_dirs> will be set to an array of strings.
+
+=item * none
+
+This explicitly turns off encoding and is useful when you want to disable
+implicit encoding detection. For example:
+
+ ; error, unclosed JSON string
+ a = "
+
+ ; ok, a single double-quote
+ b = !none "
+
+ ; translated to current paths under user's home directory, e.g. "/home/ujang"
+ ; and "/home/ujang/Pictures"
+ c = ~
+ d = ~/Pictures/
+
+ ; literal "~" and "~/Pictures"
+ e = !none ~
+ f = !none ~/Pictures/
 
 =back
 

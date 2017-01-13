@@ -73,10 +73,6 @@ integrity of values, not preserving comments/whitespaces.)
 
 But note that IOD uses JSON in places.
 
-B<TOML>. The basic syntax is INI (C<key=value> lines and C<[section]>) but it
-diverges more by allowing nested section using indentation and multiline values.
-Round-tripping parsers exist for TOML.
-
 B<Apache-webserver-style> lacks round-trip parsers.
 
 B<XML> lacks round-trip parsers and is not convenient for humans to read and
@@ -593,8 +589,9 @@ INI format specification, L<http://en.wikipedia.org/wiki/INI_file>
 TOML, a minimal configuration file format that looks like INI, but diverges
 more, https://github.com/toml-lang/toml. This is similar in goal and principles
 to IOD, with a few differences: more types and literals (boolean, datetime),
-array and strings can span lines. There are already implementations in multiple
-languages, but there seems to be no focus on round-tripping.
+array and strings can span lines, section can be nested using indentation. There
+are already implementations in multiple languages, and a few of them are already
+round-tripping.
 
 =cut
 

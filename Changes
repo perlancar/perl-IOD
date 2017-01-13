@@ -1,3 +1,14 @@
+0.9.11  2017-01-13 (PERLANCAR)
+
+        - Introduce !none encoding.
+
+        - [Experimental] Allow '~' first character of value to implicitly turn
+          on !path encoding. This is to avoid a potentially common trap because
+          a configuration often contains paths. To disable path encoding
+          interpretation of '~foo', one can quote using double quote, e.g.
+          "~foo" or use the newly introduced !none encoding.
+
+
 0.9.10  2016-02-24 (PERLANCAR)
 
 	- [Experimental] Introduce encodings !path and !paths which are

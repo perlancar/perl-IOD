@@ -73,6 +73,10 @@ integrity of values, not preserving comments/whitespaces.)
 
 But note that IOD uses JSON in places.
 
+B<TOML>. The basic syntax is INI (C<key=value> lines and C<[section]>) but it
+diverges more by allowing nested section using indentation and multiline values.
+Round-tripping parsers exist for TOML.
+
 B<Apache-webserver-style> lacks round-trip parsers.
 
 B<XML> lacks round-trip parsers and is not convenient for humans to read and

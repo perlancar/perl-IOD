@@ -1,4 +1,4 @@
-0.9.12  2017-08-17 (PERLANCAR)
+0.9.12  2017-08-17  Released-By: PERLANCAR
 
 	- No spec changes.
 
@@ -6,7 +6,7 @@
 	  JSON and XML have round-trip parsers.
 
 
-0.9.11  2017-01-13 (PERLANCAR)
+0.9.11  2017-01-13  Released-By: PERLANCAR
 
         - Introduce !none encoding.
 
@@ -17,14 +17,14 @@
           "~foo" or use the newly introduced !none encoding.
 
 
-0.9.10  2016-02-24 (PERLANCAR)
+0.9.10  2016-02-24  Released-By: PERLANCAR
 
 	- [Experimental] Introduce encodings !path and !paths which are
 	  literal string/array of strings but with some
 	  substitution/wildcard expansion.
 
 
-0.9.9   2015-03-18 (PERLANCAR)
+0.9.9   2015-03-18  Released-By: PERLANCAR
 
         - Be more strict about directive line: it must not be indented
           (otherwise it becomes a normal comment line).
@@ -32,34 +32,34 @@
         - Fix wordings and minor updates.
 
 
-0.9.8   2015-01-03 (PERLANCAR)
+0.9.8   2015-01-03  Released-By: PERLANCAR
 
 	- No spec changes.
 
 	- Rebuild (Generate TODO.md).
 
 
-0.9.7    2014-09-18 (PERLANCAR)
+0.9.7    2014-09-18  Released-By: PERLANCAR
 
          - No spec changes.
 
          - Wording and fix example for !merge.
 
 
-0.9.6    2014-08-28 (PERLANCAR)
+0.9.6    2014-08-28  Released-By: PERLANCAR
 
          - For convenience, allow value that starts with '[' and '{' to be
            interpreted as JSON (array and hash, respectively).
 
 
-0.9.5    2014-08-18 (SHARYANTO)
+0.9.5    2014-08-18  Released-By: SHARYANTO
 
          - Fix grammars and typos.
 
          - Officially allow bang-only directive ('!foo').
 
 
-0.9.4    2014-08-18 (SHARYANTO)
+0.9.4    2014-08-18  Released-By: SHARYANTO
 
          - No spec changes.
 
@@ -68,7 +68,7 @@
          - Fix typo.
 
 
-0.9.3    2014-08-17 (SHARYANTO)
+0.9.3    2014-08-17  Released-By: SHARYANTO
 
          - Add directive: !noop (does nothing, for testing).
 
@@ -77,7 +77,7 @@
            noop' (whitespaces).
 
 
-0.9.2    2014-08-17 (SHARYANTO)
+0.9.2    2014-08-17  Released-By: SHARYANTO
 
          [REMOVED FEATURES]
 
@@ -85,7 +85,7 @@
            no arguments.
 
 
-0.9.1    2014-08-13 (SHARYANTO)
+0.9.1    2014-08-13  Released-By: SHARYANTO
 
          - Use JSON rule for double-quoted string (in key value as well as
            directive argument), this way we don't have to define our own string
@@ -117,7 +117,7 @@
          - Other tweaks.
 
 
-0.9.0    2012-10-14 (SHARYANTO)
+0.9.0    2012-10-14  Released-By: SHARYANTO
 
          - First release. Split from implementation Config-Ini-OnDrugs.
 
